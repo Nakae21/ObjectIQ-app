@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Object Identifier</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="src/style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                <h1>Object<span class="highlight">IQ</span></h1>
+            </div>
+            <p class="subtitle">Real-time AI Vision</p>
+        </header>
+
+        <main class="vision-stage">
+            <div class="camera-wrapper glass-panel">
+                <video id="webcam" autoplay playsinline muted></video>
+                <canvas id="canvas"></canvas>
+
+                <!-- Loading State overlay -->
+                <div id="loading-state" class="state-overlay active">
+                    <div class="spinner"></div>
+                    <p class="state-text">Initializing AI Model...</p>
+                </div>
+
+                <!-- Error State/Permission overlay -->
+                <div id="error-state" class="state-overlay hidden">
+                    <svg class="error-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <p class="state-text" id="error-message">Camera access required</p>
+                    <button id="retry-btn" class="primary-btn">Retry Camera</button>
+                </div>
+            </div>
+
+            <div class="controls panel glass-panel">
+                <div class="status-indicator">
+                    <div class="dot" id="status-dot"></div>
+                    <span id="status-text">Ready</span>
+                </div>
+                <div class="detected-info">
+                    <h3>Identified Items</h3>
+                    <ul id="object-list" class="object-list">
+                        <li class="empty-state">Scanning environment...</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- TensorFlow.js and COCO-SSD via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
+    <!-- Application Logic -->
+    <script src="src/main.js"></script>
+</body>
+
+</html>

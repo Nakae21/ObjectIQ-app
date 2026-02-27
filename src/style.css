@@ -233,6 +233,43 @@ canvas {
     color: var(--text-secondary);
 }
 
+.icon-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    margin-left: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.icon-btn.active {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.icon-btn.active .audio-off-icon { display: none; }
+.icon-btn.active .audio-on-icon { display: block !important; }
+
+.icon-btn svg {
+    transition: transform 0.2s ease;
+}
+.icon-btn:active svg {
+    transform: scale(0.9);
+}
+
 .detected-info {
     text-align: right;
 }

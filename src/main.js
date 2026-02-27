@@ -14,6 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let model = null;
     let isDetecting = false;
+    let isAudioEnabled = false;
+    let currentlySpeaking = false;
+    let lastSpokenObjects = new Set();
+
+    const audioToggleBtn = document.getElementById('audio-toggle');
 
     // Initialization
     async function init() {
@@ -131,18 +136,43 @@ document.addEventListener('DOMContentLoaded', () => {
             // Sort by confidence (highest first)
             predictions.sort((a, b) => b.score - a.score);
 
+            const currentFrameObjects = new Set();
+
             // Create a list item for each uniquely detected object (or all of them)
             predictions.forEach(pred => {
                 const confidence = Math.round(pred.score * 100);
                 const li = document.createElement('li');
                 li.innerHTML = `<span>${pred.class}</span> <span class="confidence">${confidence}%</span>`;
                 objectList.appendChild(li);
+
+                currentFrameObjects.add(pred.class);
             });
+
+            // Handle Audio Pronunciation
+            if (isAudioEnabled && !currentlySpeaking) {
+                // Find items that are new in this frame compared to last spoken ones
+                const newItems = Array.from(currentFrameObjects).filter(item => !lastSpokenObjects.has(item));
+
+                if (newItems.length > 0) {
+                    speakText(newItems.join(', '));
+
+                    // Update our tracking set to these items so we don't repeat them forever
+                    lastSpokenObjects = new Set(currentFrameObjects);
+                }
+            } else if (!isAudioEnabled) {
+                lastSpokenObjects.clear();
+            }
+
         } else {
             const li = document.createElement('li');
             li.className = 'empty-state';
             li.textContent = 'Scanning environment...';
             objectList.appendChild(li);
+
+            // Clear tracking if nothing is seen
+            if (!currentlySpeaking) {
+                lastSpokenObjects.clear();
+            }
         }
 
         requestAnimationFrame(detectObjects);
@@ -195,11 +225,52 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function speakText(text) {
+        if (!window.speechSynthesis) return;
+
+        currentlySpeaking = true;
+
+        // Stop any current speech
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.1; // Slightly faster
+        utterance.pitch = 1.0;
+
+        utterance.onend = () => {
+            currentlySpeaking = false;
+        };
+
+        utterance.onerror = () => {
+            currentlySpeaking = false;
+        };
+
+        window.speechSynthesis.speak(utterance);
+    }
+
     // Event Listeners
     retryBtn.addEventListener('click', () => {
         errorState.classList.remove('active');
         errorState.classList.add('hidden');
         init();
+    });
+
+    audioToggleBtn.addEventListener('click', () => {
+        isAudioEnabled = !isAudioEnabled;
+
+        if (isAudioEnabled) {
+            audioToggleBtn.classList.add('active');
+            // Cancel current speech if any
+            window.speechSynthesis.cancel();
+
+            // Speak a confirmation to let user know it works
+            const confirmUtterance = new SpeechSynthesisUtterance("Audio enabled.");
+            window.speechSynthesis.speak(confirmUtterance);
+        } else {
+            audioToggleBtn.classList.remove('active');
+            window.speechSynthesis.cancel();
+            currentlySpeaking = false;
+        }
     });
 
     // Start App

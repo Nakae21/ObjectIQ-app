@@ -118,8 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Pass `maxNumBoxes` (bump to 40) and `minScore` (lower to 0.35) to detect more smaller items
-        const predictions = await model.detect(video, 40, 0.35);
+        // Ensure high accuracy by raising the minScore to 0.6 and reducing max boxes to 15
+        const predictions = await model.detect(video, 15, 0.6);
 
         // Draw predictions
         renderPredictions(predictions);
